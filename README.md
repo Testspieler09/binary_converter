@@ -17,7 +17,7 @@
 
 ## Example output
 
-```bash
+```
 py binary_converter.py 1110-1111-0110 bin -n -s -o -t
 ```
 
@@ -50,7 +50,7 @@ The program uses the string representation of the bin and converts them by manip
 
 **The following message is the output of `py binary_converter.py -h`**
 
-```bash
+```txt
 usage: Bin-Dec-Converter [-h] [-B BITS] [-n] [-s] [-o] [-t] [-f] [-i] [-b] number {dec,bin}
 
 Convert dezimal to binary or the other way around.
