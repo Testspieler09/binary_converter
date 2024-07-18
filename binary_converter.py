@@ -89,6 +89,7 @@ class Converter:
         return bin
 
     @staticmethod
+    @is_normalized_binary
     def space_bin_num(bin: str) -> str:
         bin = bin.replace(" ", "") # normalize if it was spaced before
         idx = len(bin) % 4
@@ -106,7 +107,7 @@ class Converter:
         for idx, num in enumerate(bin[::-1]):
             if num=="0": continue
             dec += 2**idx
-        return dec
+        return str(dec)
 
     @staticmethod
     @is_normalized_decimal
@@ -315,7 +316,103 @@ class Converter:
 
 
 def main(args: object) -> None:
-    print(args)
+    num, base, bits = args.number, getattr(args, "type of number", None), 32 if args.bits==None else args.bits
+    output = []
+    match base:
+        case "bin":
+            if args.normal:
+                try:
+                    output.append(["Normal conversion\n", Converter.bin_to_dec(num)])
+                except Exception as e:
+                    print(f"Something went wrong.\n{e}")
+            if args.sign:
+                try:
+                    output.append(["Sign-Magnitude-Format conversion\n", Converter.sign_magnitude_to_dec(num)])
+                except Exception as e:
+                    print(f"Something went wrong.\n{e}")
+            if args.ones:
+                try:
+                    output.append(["Ones complement conversion\n", Converter.ones_complement_to_dec(num)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+            if args.twos:
+                try:
+                    output.append(["Twos complement conversion\n", Converter.twos_complement_to_dec(num)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+            if args.fixed:
+                try:
+                    k = int(input("Please provide how many bits should be reserved for the integer part: "))
+                    j = int(input("Please provide how many bits should be reserved for the comma part: "))
+                    output.append(["Fixed point conversion\n", Converter.fixed_point_to_dec(num, k, j)])
+                except Exception as e:
+                    print(f"Something went wrong.\n{e}")
+            if args.ieee:
+                try:
+                    output.append(["IEEE 754 conversion\n", Converter.ieee_to_dec(num, bits)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+        case "dec":
+            if args.normal:
+                try:
+                    output.append(["Normal conversion\n", Converter.dec_to_bin(num, bits)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+            if args.sign:
+                try:
+                    output.append(["Sign-Magnitude-Format conversion\n", Converter.dec_to_sign_magnitude(num, bits)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+            if args.ones:
+                try:
+                    output.append(["Ones complement conversion\n", Converter.dec_to_ones_complement(num, bits)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+            if args.twos:
+                try:
+                    output.append(["Twos complement conversion\n", Converter.dec_to_twos_complement(num, bits)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+            if args.fixed:
+                try:
+                    k = int(input("Please provide how many bits should be reserved for the integer part: "))
+                    j = int(input("Please provide how many bits should be reserved for the comma part: "))
+                    output.append(["Fixed point conversion\n", Converter.dec_to_fixed_point(num, k, j)])
+                except Exception as e:
+                    print(f"Something went wrong.\n{e}")
+            if args.ieee:
+                try:
+                    output.append(["IEEE 754 conversion\n", Converter.dec_to_ieee(num, bits)])
+                except Exception as e:
+                     print(f"Something went wrong.\n{e}")
+
+    if output == []:
+        print(f"The number {num} could not be converted in any format (None was given or the number was not of the {base} format)")
+        return
+
+    if args.beautify:
+        if base=="dec":
+            m_output = []
+            for entry in output:
+                try:
+                    m_output.append([entry[0], Converter.space_bin_num(entry[1])])
+                except:
+                    m_output.append(entry)
+            output = m_output
+        elif base=="bin":
+            m_output = []
+            for entry in output:
+                try:
+                    t = entry[1].replace("(", "").replace(")", "") if all(i in entry[1] for i in "()") else entry[1]
+                    entry[1] = float(t) if "." in t else int(t)
+                    m_output.append([entry[0], f"{entry[1]:_}"])
+                except Exception as e:
+                    m_output.append(entry)
+            output = m_output
+
+    print("================ Output ================")
+    for format in output:
+        print("".join(format)+"\n")
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
@@ -332,6 +429,9 @@ if __name__ == "__main__":
     parser.add_argument("type of number",
                         choices=["dec","bin"],
                         help="Specifies the base of the provided number.")
+    parser.add_argument("-B", "--bits",
+                        type=int,
+                        help="Specify the number of bits the number should have (mostly for DEC->BIN)")
 
     formats = parser.add_argument_group("Formats")
     formats.add_argument("-n", "--normal",
