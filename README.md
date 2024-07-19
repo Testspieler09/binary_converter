@@ -6,7 +6,7 @@
 
 </div>
 
-## Surported formats
+## Supported formats
 
 - Normal conversion (all binarys positive)
 - Sign-Magnitude-Format (MSB -> also negative numbers possible)
