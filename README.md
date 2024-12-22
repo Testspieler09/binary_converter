@@ -42,7 +42,7 @@ Even though I wouldn't recommend it I wrote the class so that it is easy to use 
 
 The reason I do not recommend it is because it is not that efficient (due to python and the way i wrote the script).
 
-### Not the most efficient way to convert them (probably)
+### Not the most efficient way to convert them
 
 The program uses the string representation of the bin and converts them by manipulating it. It doesn't use bitwise logic, but rather logic that we as humans can understand more easily.
 
